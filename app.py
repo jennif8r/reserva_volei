@@ -166,7 +166,7 @@ html_stats = f"""<div class="season-stats-container">
 """
 st.markdown(html_stats, unsafe_allow_html=True)
 
-st.markdown('<div class="match-calendar-title"><span>OCUPAÇÕES DE CIMENTO</span> RAIO X DO CORTADOR OFICIAL DA EQUIPE:</div>', unsafe_allow_html=True)
+st.markdown('<div class="match-calendar-title"><span>OCUPAÇÕES DA QUADRA</span>/div>', unsafe_allow_html=True)
 
 html_fixture = '<div class="grid-container">'
 grupo_dias = df_jogo.groupby(['just_date', 'br_dia'])
@@ -181,10 +181,10 @@ for (obj_dt, diastr), matches in grupo_dias:
         dica, adcional = "O tempo reservado garante saques relaxados e fôlego à disposição sem estressar as panturrilhas pro resto da semana do time.", "" 
     elif horas == 3:
         tipo, aviso = "mode-game", "JOGO PEGADO — EXIGÊNCIA ATLÉTICA PRESENTE"
-        dica, adcional = "Aqui já tem close físico acontecendo na Osvaldo! Garantir banco de rodízio bom na sombra pra recuperar aeróbico antes da próxima pontuação pesada das partidas contínuas.", "" 
+        dica, adcional = "Aqui já tem close físico acontecendo na Osvaldo! ", "" 
     else: 
         tipo, aviso = "mode-survival", "[ ! CHÃO QUENTE - O PICO DA ESTAMINA GERAL ACIONOU ! ]"
-        dica, adcional = "QUATRO+ HORAS AGENDADAS CONSECUTIVAMENTE HOJE? Isso é Resistência Extrema das Cortadoras da praça. Ninguém pisa hoje em quadra de estômago vazio: Organizem rodizio tático e providenciem bastante hidratação coletiva e perna forte pro sol!!", "survival-border"
+        dica, adcional = "QUATRO+ HORAS AGENDADAS CONSECUTIVAMENTE HOJE? Isso é Resistência Extrema das Cortadoras da praça.", "survival-border"
 
     slots = "".join([f'<div class="time-slot"><div class="badge-hour">{lz["hour"]}</div><div class="badge-user">Reserva efetuada p/:: <span style="color:#000;">{lz["account_id"]}</span></div></div>' for _, lz in matches.iterrows()])
 

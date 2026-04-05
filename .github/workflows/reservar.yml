@@ -2,7 +2,7 @@ name: Reserva Automática
 
 on:
   schedule:
-    - cron: "*/15 * * * *"  # roda a cada 15 minutos
+    - cron: "*/15 * * * *"  
   workflow_dispatch:
 
 jobs:
@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      
       RESERVA_ACCOUNTS_JSON: ${{ secrets.RESERVA_ACCOUNTS_JSON }}
       SMTP_PASS: ${{ secrets.SMTP_PASS }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -19,16 +18,18 @@ jobs:
       NOTIFY_TO: ${{ secrets.NOTIFY_TO }}
 
       
-      TARGET_HOURS_JSON: ${{ vars.TARGET_HOURS_JSON }}
-      ACCEPTED_WINDOWS_JSON: ${{ vars.ACCEPTED_WINDOWS_JSON }}
-      MIN_WINDOW_SIZE: ${{ vars.MIN_WINDOW_SIZE }}
-      MAX_WINDOW_SIZE: ${{ vars.MAX_WINDOW_SIZE }}
-      LOOKAHEAD_WEEKS: ${{ vars.LOOKAHEAD_WEEKS }}
+      TARGET_HOURS_JSON: '["13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"]'
 
-      ACTIVITY_NAME: ${{ vars.ACTIVITY_NAME }}
-      REGIONAL_NAME: ${{ vars.REGIONAL_NAME }}
-      UNIT_NAME: ${{ vars.UNIT_NAME }}
-      CAPACITY: ${{ vars.CAPACITY }}
+      ACCEPTED_WINDOWS_JSON: '[["16:00","17:00","18:00"],["17:00","18:00","19:00"],["18:00","19:00","20:00"],["19:00","20:00","21:00"],["12:00","13:00","14:00"],["13:00","14:00","15:00"],["14:00","15:00","16:00"]]'
+
+      MIN_WINDOW_SIZE: "3"
+      MAX_WINDOW_SIZE: "5"
+      LOOKAHEAD_WEEKS: "8"
+
+      ACTIVITY_NAME: "Voleibol"
+      REGIONAL_NAME: "Unidade Regional Matriz"
+      UNIT_NAME: "CENTRO DE ESPORTE E LAZER DIRCEU GRAESER"
+      CAPACITY: "8"
 
     steps:
       - name: Checkout
@@ -56,7 +57,7 @@ jobs:
           git commit -m "update state" || echo "sem mudanças"
           git push
 
-      - name: 📸 Upload debug (se falhar)
+      - name: Upload debug (se falhar)
         if: failure()
         uses: actions/upload-artifact@v4
         with:

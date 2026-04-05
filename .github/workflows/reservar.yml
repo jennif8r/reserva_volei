@@ -9,6 +9,19 @@ jobs:
   reservar:
     runs-on: ubuntu-latest
 
+    env:
+      RESERVA_ACCOUNTS_JSON: ${{ secrets.RESERVA_ACCOUNTS_JSON }}
+
+      TARGET_HOURS_JSON: ${{ vars.TARGET_HOURS_JSON }}
+      ACCEPTED_WINDOWS_JSON: ${{ vars.ACCEPTED_WINDOWS_JSON }}
+      MIN_WINDOW_SIZE: ${{ vars.MIN_WINDOW_SIZE }}
+      MAX_WINDOW_SIZE: ${{ vars.MAX_WINDOW_SIZE }}
+
+      ACTIVITY_NAME: ${{ vars.ACTIVITY_NAME }}
+      REGIONAL_NAME: ${{ vars.REGIONAL_NAME }}
+      UNIT_NAME: ${{ vars.UNIT_NAME }}
+      CAPACITY: ${{ vars.CAPACITY }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5

@@ -3,7 +3,7 @@ name: Reservar Vôlei
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write

@@ -190,10 +190,18 @@ def assign_accounts_to_window(
                 }
             )
 
+        safe_assignments = [
+            {
+                "account_id": item["account"].get("id", "sem_id"),
+                "hour": item["hour"],
+            }
+            for item in assignments
+        ]
+
         logger.info(
             "%s conta(s) distribuída(s): %s",
-            len(assignments),
-            assignments,
+            len(safe_assignments),
+            safe_assignments,
         )
         return assignments
 

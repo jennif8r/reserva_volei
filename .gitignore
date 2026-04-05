@@ -1,3 +1,14 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+artifacts/
+debug_login.png
+debug_login.html
+debug_availability.png
+debug_availability.html
+
 .env
 /.env
 
@@ -16,3 +27,4 @@ artifacts
 .artifacts
 /artifacts
 ./artifacts
+

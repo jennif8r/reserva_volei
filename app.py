@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 import os
+from datetime import datetime, timedelta
 
 
 st.set_page_config(page_title="Vôlei Praça Osvaldo | Hub da Equipe", layout="wide", initial_sidebar_state="collapsed")
@@ -174,12 +175,15 @@ pico_semana = df_jogo.groupby('date').size().max()
 st.markdown('<div class="subtitle">ARENA OSVALDO — O HUB OFICIAL DA NOSSA SQUAD </div>', unsafe_allow_html=True)
 st.markdown('<div class="title-banner">PRIDE COURT</div>', unsafe_allow_html=True)
 
+hora_inicio_jumbo = primeira_bola['dt_calc'].strftime('%Hh')
+hora_fim_jumbo = (primeira_bola['dt_calc'] + timedelta(hours=1)).strftime('%Hh')
+
 html_topo = f"""<div class="next-match-jumbotron">
 <div class="jumbotron-bg-text">OSVALDO</div>
 <div>
 <span class="jumbo-badge">BOLA AO ALTO — PRIMEIRA JANELA DE JOGO ABERTA</span>
 <div style="font-family:'Chakra Petch'; font-size:26px; color:#fff; font-weight:700; margin-top: 5px;">{primeira_bola['br_dia']}, <span style="color:#ff0055;">{dia_mes}</span></div>
-<div class="jumbo-clock">{primeira_bola['hour']} HRS — A REDE TE CHAMA</div>
+<div class="jumbo-clock">{hora_inicio_jumbo} as {hora_fim_jumbo} — A REDE TE CHAMA</div>
 <div style="color: #cbd5e1; font-family:'Arial'; font-size:14px; margin-top:8px; z-index:2; position:relative; text-transform:uppercase;">Identificação Log Praça via: <b style="color:white">{primeira_bola['account_id']}</b></div>
 </div>
 </div>
@@ -223,8 +227,10 @@ for (obj_dt, diastr), matches in grupo_dias:
         tipo, aviso = "mode-survival", "[ ! CHÃO QUENTE - O PICO DA ESTAMINA GERAL ACIONOU ! ]"
         dica, adcional = "QUATRO+ HORAS AGENDADAS CONSECUTIVAMENTE HOJE? Isso é Resistência Extrema das Cortadoras da praça.", "survival-border"
 
-    slots = "".join([f'<div class="time-slot"><div class="badge-hour">{lz["hour"]}</div><div class="badge-user">Reserva efetuada p/:: <span style="color:#000;">{lz["account_id"]}</span></div></div>' for _, lz in matches.iterrows()])
-
+    slots = "".join([
+        f'<div class="time-slot"><div class="badge-hour" style="min-width: 100px;">{lz["dt_calc"].strftime("%Hh")} - {(lz["dt_calc"] + timedelta(hours=1)).strftime("%Hh")}</div><div class="badge-user">Reserva efetuada p/:: <span style="color:#000;">{lz["account_id"]}</span></div></div>' 
+        for _, lz in matches.iterrows()
+    ])
     html_fixture += f"""<div class="fixture-card {tipo} {adcional}">
 <div class="fixture-header"><div class="date-day">{diastr} / {dstr}</div><div class="hours-vol">{horas} HRS RESERVADO!</div></div>
 <div class="fixture-body">{slots}</div>

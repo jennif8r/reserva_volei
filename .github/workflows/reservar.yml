@@ -30,6 +30,7 @@ jobs:
       REGIONAL_NAME: "Unidade Regional Matriz"
       UNIT_NAME: "CENTRO DE ESPORTE E LAZER DIRCEU GRAESER"
       CAPACITY: "8"
+      URL: "https://curitibaemmovimento.curitiba.pr.gov.br/"
 
     steps:
       - name: Checkout

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 @contextmanager
-def create_browser(headless: bool = True):
+def create_browser(headless: bool = True, slow_mo: int = 0):
     """
     Cria um navegador Playwright com contexto seguro.
 
@@ -22,7 +22,7 @@ def create_browser(headless: bool = True):
         try:
             browser = p.chromium.launch(
                 headless=headless,
-                slow_mo=0, 
+                slow_mo=slow_mo, 
                 args=[
                     "--no-sandbox",
                     "--disable-dev-shm-usage",

@@ -7,6 +7,102 @@ from playwright.sync_api import Page, TimeoutError
 logger = logging.getLogger(__name__)
 
 
+def wait_detail_loading(page: Page) -> None:
+    """
+    Aguarda um possível carregamento da tela de detalhes.
+
+    Args:
+        page (Page): Página ativa do Playwright.
+    """
+    loading_selectors = [
+        ".loading",
+        ".loader",
+        ".spinner",
+        ".spinner-border",
+        ".spinner-grow",
+        ".blockUI",
+        "[aria-busy='true']",
+    ]
+
+    logger.debug("Aguardando possível carregamento da tela de detalhes")
+
+    # pequena pausa para o carregamento começar
+    page.wait_for_timeout(500)
+
+    for selector in loading_selectors:
+        try:
+            locator = page.locator(selector).first
+            if locator.count() > 0 and locator.is_visible():
+                logger.debug("Loading detectado em %s", selector)
+                locator.wait_for(state="hidden", timeout=15000)
+                logger.debug("Loading finalizado em %s", selector)
+                return
+        except TimeoutError:
+            logger.debug("Loading não sumiu a tempo para %s", selector)
+        except Exception:
+            continue
+
+    try:
+        page.wait_for_load_state("networkidle", timeout=5000)
+    except TimeoutError:
+        logger.debug("networkidle não foi atingido na tela de detalhes")
+
+
+def wait_time_options_loaded(
+    page: Page,
+    target_hour: str,
+    timeout_ms: int = 30000,
+) -> None:
+    """
+    Aguarda o select de horários carregar opções reais.
+
+    Regras:
+        - o select precisa existir;
+        - precisa haver opções válidas;
+        - tenta aguardar até o horário alvo aparecer no texto das opções.
+
+    Args:
+        page (Page): Página ativa do Playwright.
+        target_hour (str): Horário alvo no formato HH:MM.
+        timeout_ms (int): Timeout em milissegundos.
+    """
+    logger.debug(
+        "Aguardando carregamento das opções do select para o horário %s",
+        target_hour,
+    )
+
+    page.locator("#selectHorario").wait_for(state="visible", timeout=15000)
+
+    page.wait_for_function(
+        """
+        (targetHour) => {
+            const select = document.querySelector("#selectHorario");
+            if (!select) {
+                return false;
+            }
+
+            const options = Array.from(select.options)
+                .map(option => option.textContent.trim())
+                .filter(text => text.length > 0);
+
+            const validOptions = options.filter(text => {
+                const lower = text.toLowerCase();
+                return !lower.includes("selecione") && text.includes("às");
+            });
+
+            if (validOptions.length === 0) {
+                return false;
+            }
+
+            return validOptions.some(text => text.startsWith(targetHour));
+        }
+        """,
+        arg=target_hour,
+        timeout=timeout_ms,
+    )
+
+    logger.debug("Opções do select carregadas com sucesso")
+
 def click_hour_block(page: Page, target_hour: str) -> bool:
     """
     Clica em "Mais detalhes" no bloco que contém o horário desejado.
@@ -35,12 +131,18 @@ def click_hour_block(page: Page, target_hour: str) -> bool:
                 block_hour = hour_elements.nth(hour_index).inner_text().strip()
 
                 if block_hour == target_hour:
-                    logger.info("Horário %s encontrado no bloco %s", target_hour, block_index)
+                    logger.info(
+                        "Horário %s encontrado no bloco %s",
+                        target_hour,
+                        block_index,
+                    )
 
                     details_button = block.locator("a:has-text('Mais detalhes')")
                     details_button.click()
 
-                    page.locator("#selectHorario").wait_for(timeout=15000)
+                    wait_detail_loading(page)
+                    wait_time_options_loaded(page, target_hour)
+
                     logger.debug("Tela de detalhes aberta com sucesso")
                     return True
 
@@ -67,7 +169,10 @@ def parse_interval_start(interval_label: str) -> Optional[str]:
         Optional[str]: Horário inicial ou None.
     """
     try:
-        match = re.match(r"^\s*(\d{2}:\d{2})\s+às\s+\d{2}:\d{2}\s*$", interval_label)
+        match = re.match(
+            r"^\s*(\d{2}:\d{2})\s+às\s+\d{2}:\d{2}\s*$",
+            interval_label,
+        )
         if match:
             return match.group(1)
         return None
@@ -82,8 +187,7 @@ def choose_best_interval(page: Page, target_hour: str) -> Optional[str]:
 
     Regra:
         1. Preferir intervalo cujo início seja exatamente igual ao target_hour.
-        2. Se não existir, tentar fallback por correspondência textual exata controlada.
-        3. Nunca usar contains puro sem validar o início.
+        2. Se não existir, tentar fallback controlado.
 
     Args:
         page (Page): Página ativa do Playwright.
@@ -95,7 +199,6 @@ def choose_best_interval(page: Page, target_hour: str) -> Optional[str]:
     try:
         logger.debug("Lendo opções do select de horário para alvo %s", target_hour)
 
-        page.locator("#selectHorario").wait_for(timeout=15000)
         option_elements = page.locator("#selectHorario option")
         option_count = option_elements.count()
 
@@ -121,11 +224,18 @@ def choose_best_interval(page: Page, target_hour: str) -> Optional[str]:
                 exact_match = label
                 break
 
-            if safe_fallback is None and re.search(rf"\b{re.escape(target_hour)}\b", label):
+            if safe_fallback is None and re.search(
+                rf"^{re.escape(target_hour)}\s+às\b",
+                label,
+            ):
                 safe_fallback = label
 
         if exact_match:
-            logger.info("Intervalo exato encontrado para %s: %s", target_hour, exact_match)
+            logger.info(
+                "Intervalo exato encontrado para %s: %s",
+                target_hour,
+                exact_match,
+            )
             return exact_match
 
         if safe_fallback:
@@ -158,6 +268,9 @@ def select_time_slot(page: Page, target_hour: str) -> Optional[str]:
     try:
         logger.debug("Selecionando intervalo para o horário %s", target_hour)
 
+        # reforço extra para garantir que as options já chegaram
+        wait_time_options_loaded(page, target_hour)
+
         interval_label = choose_best_interval(page, target_hour)
         if not interval_label:
             return None
@@ -167,10 +280,10 @@ def select_time_slot(page: Page, target_hour: str) -> Optional[str]:
 
         page.locator("#linkConfirmacao").click()
 
-        # Espera a próxima etapa carregar de verdade
+        wait_detail_loading(page)
         page.locator("#checkResponsabilidade").wait_for(timeout=15000)
-        logger.debug("Tela de confirmação aberta com sucesso")
 
+        logger.debug("Tela de confirmação aberta com sucesso")
         return interval_label
 
     except TimeoutError:
@@ -201,8 +314,8 @@ def confirm_reservation(page: Page) -> bool:
         continue_button = page.locator("#btnContinuar")
         continue_button.click()
 
-        # Espera curta para a submissão e troca de estado
-        page.wait_for_timeout(2000)
+        wait_detail_loading(page)
+        page.wait_for_timeout(6500)
 
         logger.info("Reserva confirmada com sucesso")
         return True

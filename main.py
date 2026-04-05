@@ -16,7 +16,7 @@ account = config.accounts[0]
 
 target_date = date(2026, 4, 13)
 
-with create_browser(headless=False) as (_, page):
+with create_browser(headless=False, slow_mo=0) as (_, page):
     login(page, config, account["login"], account["password"])
 
     available_hours = get_available_hours(page, config, target_date)

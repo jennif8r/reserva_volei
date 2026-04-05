@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import os
 
+
 st.set_page_config(page_title="Vôlei Praça Osvaldo | Hub da Equipe", layout="wide", initial_sidebar_state="collapsed")
 
 css_code = """
@@ -92,36 +93,72 @@ css_code = """
 """
 st.markdown(css_code, unsafe_allow_html=True)
 
+import pathlib
+
+STATE_PATH = pathlib.Path(__file__).parent / "state.json"
+
+
 def generate_sample_if_none():
-    if not os.path.exists("state.json"):
+    if not STATE_PATH.exists():
         dummy = {
-            "reservations": [
-                {"account_id": "Conta_Matriz", "date": "2026-05-10", "hour": "08:00", "status": "confirmed"},
-                {"account_id": "Reserva_Amigo", "date": "2026-05-10", "hour": "09:00", "status": "confirmed"},
-                {"account_id": "Conta_Matriz", "date": "2026-05-12", "hour": "18:00", "status": "confirmed"},
-                {"account_id": "AmigaX", "date": "2026-05-12", "hour": "19:00", "status": "confirmed"},
-                {"account_id": "Conta_Matriz", "date": "2026-05-12", "hour": "20:00", "status": "confirmed"},
-                {"account_id": "Conta_Matriz", "date": "2026-05-15", "hour": "08:00", "status": "confirmed"},
-                {"account_id": "AmigaX", "date": "2026-05-15", "hour": "09:00", "status": "confirmed"},
-                {"account_id": "AmigaX", "date": "2026-05-15", "hour": "10:00", "status": "confirmed"},
-                {"account_id": "Reserva_Amigo", "date": "2026-05-15", "hour": "11:00", "status": "confirmed"}
-            ]
+            "reservations": []
         }
-        with open("state.json", "w") as f:
-            json.dump(dummy, f)
+        with open(STATE_PATH, "w", encoding="utf-8") as f:
+            json.dump(dummy, f, indent=2)
+
 
 @st.cache_data
 def get_league_data():
     generate_sample_if_none()
-    with open('state.json', 'r', encoding='utf-8') as f:
-        df = pd.DataFrame(json.load(f)['reservations'])
-    df = df[df['status'] == 'confirmed'].copy()
-    if df.empty: return df
-    df['dt_calc'] = pd.to_datetime(df['date'] + ' ' + df['hour'])
-    df = df.sort_values(by=['dt_calc']).reset_index(drop=True)
-    df['just_date'] = df['dt_calc'].dt.date
-    semana_mapping = {0:'SEGUNDA', 1:'TERÇA', 2:'QUARTA', 3:'QUINTA', 4:'SEXTA', 5:'SÁBADO', 6:'DOMINGO'}
-    df['br_dia'] = df['dt_calc'].dt.dayofweek.map(semana_mapping)
+
+    try:
+        with open(STATE_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        if "reservations" not in data:
+            st.warning("Formato inválido do state.json")
+            return pd.DataFrame()
+
+        df = pd.DataFrame(data["reservations"])
+
+    except Exception as e:
+        st.error(f"Erro ao ler state.json: {e}")
+        return pd.DataFrame()
+
+    if df.empty:
+        return df
+
+    # 🔥 garante colunas obrigatórias
+    required_cols = ["date", "hour", "status", "account_id"]
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = None
+
+    df = df[df["status"] == "confirmed"].copy()
+
+    if df.empty:
+        return df
+
+    # 🧠 tratamento robusto de data
+    df["dt_calc"] = pd.to_datetime(df["date"] + " " + df["hour"], errors="coerce")
+    df = df.dropna(subset=["dt_calc"])
+
+    df = df.sort_values(by=["dt_calc"]).reset_index(drop=True)
+
+    df["just_date"] = df["dt_calc"].dt.date
+
+    semana_mapping = {
+        0: 'SEGUNDA',
+        1: 'TERÇA',
+        2: 'QUARTA',
+        3: 'QUINTA',
+        4: 'SEXTA',
+        5: 'SÁBADO',
+        6: 'DOMINGO'
+    }
+
+    df["br_dia"] = df["dt_calc"].dt.dayofweek.map(semana_mapping)
+
     return df
 
 df_jogo = get_league_data()
@@ -189,7 +226,7 @@ for (obj_dt, diastr), matches in grupo_dias:
     slots = "".join([f'<div class="time-slot"><div class="badge-hour">{lz["hour"]}</div><div class="badge-user">Reserva efetuada p/:: <span style="color:#000;">{lz["account_id"]}</span></div></div>' for _, lz in matches.iterrows()])
 
     html_fixture += f"""<div class="fixture-card {tipo} {adcional}">
-<div class="fixture-header"><div class="date-day">{diastr} / {dstr}</div><div class="hours-vol">{horas} HRS JOGADOS!</div></div>
+<div class="fixture-header"><div class="date-day">{diastr} / {dstr}</div><div class="hours-vol">{horas} HRS RESERVADO!</div></div>
 <div class="fixture-body">{slots}</div>
 <div class="engine-section">
 <div class="engine-header"><div class="engine-title" style="font-weight:900;">PREVISÃO CALÓRICA DIÁRIA DO SQUAD</div><div class="engine-level">{aviso}</div></div>

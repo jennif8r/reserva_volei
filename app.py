@@ -134,7 +134,7 @@ primeira_bola = df_jogo.iloc[0]
 dia_mes = primeira_bola['dt_calc'].strftime('%d %b')
 pico_semana = df_jogo.groupby('date').size().max()
 
-st.markdown('<div class="subtitle">ARENA OSVALDO — O HUB OFICIAL DA NOSSA SQUAD</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">ARENA OSVALDO — O HUB OFICIAL DA NOSSA SQUAD </div>', unsafe_allow_html=True)
 st.markdown('<div class="title-banner">PRIDE COURT</div>', unsafe_allow_html=True)
 
 html_topo = f"""<div class="next-match-jumbotron">
@@ -166,7 +166,7 @@ html_stats = f"""<div class="season-stats-container">
 """
 st.markdown(html_stats, unsafe_allow_html=True)
 
-st.markdown('<div class="match-calendar-title"><span>OCUPAÇÕES DA QUADRA</span>/div>', unsafe_allow_html=True)
+st.markdown('<div class="match-calendar-title"><span>OCUPAÇÕES DA QUADRA</span></div>', unsafe_allow_html=True)
 
 html_fixture = '<div class="grid-container">'
 grupo_dias = df_jogo.groupby(['just_date', 'br_dia'])

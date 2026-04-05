@@ -67,7 +67,7 @@ def get_visible_error_text(page: Page) -> Optional[str]:
     return None
 
 
-def wait_login_button_enabled(page: Page, timeout_ms: int = 30000) -> None:
+def wait_login_button_enabled(page: Page, timeout_ms: int = 90000) -> None:
     """
     Aguarda o botão de login ficar habilitado.
 
@@ -119,7 +119,7 @@ def wait_loading_after_login_click(page: Page) -> None:
             try:
                 if locator.count() > 0 and locator.is_visible():
                     logger.debug("Loading detectado em %s", selector)
-                    locator.wait_for(state="hidden", timeout=30000)
+                    locator.wait_for(state="hidden", timeout=100000)
                     logger.debug("Loading finalizado em %s", selector)
                     return
             except TimeoutError:
@@ -129,12 +129,12 @@ def wait_loading_after_login_click(page: Page) -> None:
 
         # fallback: aguarda estados gerais
         try:
-            page.wait_for_load_state("domcontentloaded", timeout=10000)
+            page.wait_for_load_state("domcontentloaded", timeout=90000)
         except TimeoutError:
             pass
 
         try:
-            page.wait_for_load_state("networkidle", timeout=10000)
+            page.wait_for_load_state("networkidle", timeout=90000)
         except TimeoutError:
             logger.debug("networkidle não foi atingido após o login")
 
@@ -145,7 +145,7 @@ def wait_loading_after_login_click(page: Page) -> None:
         )
 
 
-def wait_for_post_login(page: Page, timeout_ms: int = 60000) -> None:
+def wait_for_post_login(page: Page, timeout_ms: int = 100000) -> None:
     """
     Aguarda sinais de sucesso após o login.
 
@@ -209,10 +209,10 @@ def submit_login(page: Page) -> None:
 
     # importante: deixa o front processar a senha antes do clique
     logger.debug("Aguardando processamento da senha")
-    page.wait_for_timeout(9500)
+    page.wait_for_timeout(19500)
 
     logger.debug("Aguardando botão de login habilitar")
-    wait_login_button_enabled(page, timeout_ms=90000)
+    wait_login_button_enabled(page, timeout_ms=100000)
 
     for attempt in range(1, 4):
         try:
@@ -251,7 +251,7 @@ def submit_login(page: Page) -> None:
             if attempt == 3:
                 raise
 
-            page.wait_for_timeout(2000)
+            page.wait_for_timeout(100000)
 
 
 def login(
@@ -272,11 +272,11 @@ def login(
     try:
         logger.info("Acessando portal")
         page.goto(config.url, wait_until="domcontentloaded")
-        page.set_default_timeout(60000)
+        page.set_default_timeout(100000)
 
         try:
             logger.debug("Tentando fechar popup inicial")
-            page.locator("#btn-fechar-popup").click(timeout=6000)
+            page.locator("#btn-fechar-popup").click(timeout=100000)
             logger.debug("Popup fechado")
         except TimeoutError:
             logger.debug("Popup não apareceu")
@@ -288,20 +288,20 @@ def login(
         page.get_by_role("button", name="Entrar com CPF").click()
 
         logger.debug("Aguardando campo de CPF")
-        page.locator("#documento").wait_for(state="visible", timeout=95000)
+        page.locator("#documento").wait_for(state="visible", timeout=100000)
 
         logger.debug("Preenchendo CPF")
         page.locator("#documento").fill(login_value)
         page.locator("#btnProximo").click()
 
         logger.debug("Aguardando campo de senha")
-        page.locator("#senha").wait_for(state="visible", timeout=95000)
+        page.locator("#senha").wait_for(state="visible", timeout=100000)
 
         logger.debug("Preenchendo senha")
         page.locator("#senha").fill(password)
 
         submit_login(page)
-        wait_for_post_login(page, timeout_ms=90000)
+        wait_for_post_login(page, timeout_ms=100000)
 
         logger.info("Login realizado com sucesso")
 

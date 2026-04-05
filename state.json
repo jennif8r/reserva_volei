@@ -17,12 +17,6 @@
       "date": "2026-04-11",
       "hour": "15:00",
       "status": "confirmed"
-    },
-    {
-      "account_id": "conta_3",
-      "date": "2026-04-25",
-      "hour": "15:00",
-      "status": "confirmed"
     }
   ]
 }

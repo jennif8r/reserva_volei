@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 HEADLESS = True
-SLOW_MO = 0
+SLOW_MO = 1800
 
 
 def get_next_saturdays(limit: int = 4) -> List[date]:

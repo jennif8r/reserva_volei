@@ -209,10 +209,10 @@ def submit_login(page: Page) -> None:
 
     # importante: deixa o front processar a senha antes do clique
     logger.debug("Aguardando processamento da senha")
-    page.wait_for_timeout(3500)
+    page.wait_for_timeout(9500)
 
     logger.debug("Aguardando botão de login habilitar")
-    wait_login_button_enabled(page, timeout_ms=30000)
+    wait_login_button_enabled(page, timeout_ms=90000)
 
     for attempt in range(1, 4):
         try:
@@ -288,20 +288,20 @@ def login(
         page.get_by_role("button", name="Entrar com CPF").click()
 
         logger.debug("Aguardando campo de CPF")
-        page.locator("#documento").wait_for(state="visible", timeout=15000)
+        page.locator("#documento").wait_for(state="visible", timeout=95000)
 
         logger.debug("Preenchendo CPF")
         page.locator("#documento").fill(login_value)
         page.locator("#btnProximo").click()
 
         logger.debug("Aguardando campo de senha")
-        page.locator("#senha").wait_for(state="visible", timeout=15000)
+        page.locator("#senha").wait_for(state="visible", timeout=95000)
 
         logger.debug("Preenchendo senha")
         page.locator("#senha").fill(password)
 
         submit_login(page)
-        wait_for_post_login(page, timeout_ms=60000)
+        wait_for_post_login(page, timeout_ms=90000)
 
         logger.info("Login realizado com sucesso")
 

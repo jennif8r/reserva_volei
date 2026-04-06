@@ -47,6 +47,12 @@
       "date": "2026-04-25",
       "hour": "17:00",
       "status": "confirmed"
+    },
+    {
+      "account_id": "conta_1",
+      "date": "2026-04-18",
+      "hour": "15:00",
+      "status": "confirmed"
     }
   ]
 }

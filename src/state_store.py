@@ -9,16 +9,22 @@ logger = logging.getLogger(__name__)
 
 class StateStore:
     """
-    Responsável por ler, consultar e salvar o estado local das reservas.
+    Classe responsável por gerenciar o estado local das reservas.
+
+    Este estado é persistido em um arquivo JSON e contém todas as reservas
+    já realizadas, permitindo ao sistema tomar decisões inteligentes
+    com base no histórico.
     """
 
     def __init__(self, file_path: str = "state.json") -> None:
         """
-        Inicializa o repositório de estado.
+        Inicializa o StateStore carregando o estado do arquivo.
 
         Args:
-            file_path (str): Caminho do arquivo JSON de estado.
+            file_path (str): Caminho para o arquivo JSON de estado.
         """
+        logger.debug("Inicializando StateStore com arquivo: %s", file_path)
+
         self.file_path = Path(file_path)
         self.state = self._load_state()
 
@@ -27,12 +33,12 @@ class StateStore:
         Carrega o estado do arquivo JSON.
 
         Returns:
-            Dict[str, Any]: Estado carregado.
+            Dict[str, Any]: Estrutura de estado carregada.
         """
         try:
             if not self.file_path.exists():
                 logger.info(
-                    "Arquivo de estado não encontrado. Criando estado inicial."
+                    "Arquivo de estado não encontrado. Criando estrutura inicial."
                 )
                 return {"reservations": []}
 
@@ -40,117 +46,220 @@ class StateStore:
 
             if not content:
                 logger.warning(
-                    "Arquivo de estado vazio. Usando estrutura inicial."
+                    "Arquivo de estado está vazio. Inicializando estrutura padrão."
                 )
                 return {"reservations": []}
 
             state = json.loads(content)
 
             if "reservations" not in state or not isinstance(
-                state["reservations"],
-                list,
+                state["reservations"], list
             ):
                 logger.warning(
-                    "Estrutura inválida no estado. Reiniciando reservations."
+                    "Estrutura inválida detectada. Resetando lista de reservas."
                 )
                 state["reservations"] = []
 
             logger.info(
-                "Estado carregado com %s reserva(s)",
+                "Estado carregado com %d reserva(s)",
                 len(state["reservations"]),
             )
+
+            logger.debug("Conteúdo do estado carregado: %s", state)
+
             return state
 
         except Exception:
-            logger.exception("Erro ao carregar state.json")
+            logger.exception("Erro ao carregar arquivo de estado")
             raise
 
     def save(self) -> None:
         """
-        Salva o estado atual no arquivo JSON.
+        Persiste o estado atual no arquivo JSON.
         """
         try:
+            logger.debug("Salvando estado atual no arquivo")
+
             self.file_path.write_text(
                 json.dumps(self.state, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
+
             logger.info("Estado salvo com sucesso em %s", self.file_path)
+
         except Exception:
-            logger.exception("Erro ao salvar state.json")
+            logger.exception("Erro ao salvar o estado")
             raise
 
     def get_reservations(self) -> List[Dict[str, Any]]:
         """
-        Retorna a lista de reservas registradas.
+        Retorna todas as reservas armazenadas.
 
         Returns:
             List[Dict[str, Any]]: Lista de reservas.
         """
-        return self.state.get("reservations", [])
+        reservations = self.state.get("reservations", [])
+
+        logger.debug("Total de reservas retornadas: %d", len(reservations))
+
+        return reservations
 
     def get_account_id(self, account: Dict[str, Any]) -> str:
         """
-        Retorna o identificador seguro da conta para uso no sistema e nos logs.
+        Extrai e valida o ID de uma conta.
 
         Args:
-            account (Dict[str, Any]): Conta carregada da configuração.
+            account (Dict[str, Any]): Dados da conta.
 
         Returns:
-            str: Identificador da conta.
+            str: ID da conta validado.
+
+        Raises:
+            ValueError: Se o ID estiver ausente ou inválido.
         """
         account_id = account.get("id", "").strip()
+
+        logger.debug("Extraindo account_id: %s", account_id)
 
         if not account_id:
             raise ValueError("Conta sem campo 'id' válido.")
 
         return account_id
 
-    def has_future_reservation(
-        self,
-        account_id: str,
-        reference_date: date,
+
+    def get_reservations_by_date(
+        self, target_date: date
+    ) -> List[Dict[str, Any]]:
+        """
+        Retorna todas as reservas confirmadas para uma data específica.
+
+        Args:
+            target_date (date): Data alvo.
+
+        Returns:
+            List[Dict[str, Any]]: Lista de reservas na data.
+        """
+        try:
+            logger.debug("Buscando reservas para a data: %s", target_date)
+
+            result = [
+                r
+                for r in self.get_reservations()
+                if r.get("date") == target_date.isoformat()
+                and r.get("status") == "confirmed"
+            ]
+
+            logger.debug("Reservas encontradas: %s", result)
+
+            return result
+
+        except Exception:
+            logger.exception("Erro ao buscar reservas por data")
+            raise
+
+    def has_reservation_on_date(
+        self, account_id: str, target_date: date
     ) -> bool:
         """
-        Verifica se a conta já possui uma reserva futura ou atual.
+        Verifica se uma conta já possui reserva em uma data específica.
 
         Args:
             account_id (str): ID da conta.
-            reference_date (date): Data de referência.
+            target_date (date): Data alvo.
 
         Returns:
-            bool: True se já houver reserva futura ou atual.
+            bool: True se já houver reserva, False caso contrário.
         """
         try:
+            logger.debug(
+                "Verificando reserva da conta %s na data %s",
+                account_id,
+                target_date,
+            )
+
+            result = any(
+                r.get("account_id") == account_id
+                and r.get("date") == target_date.isoformat()
+                and r.get("status") == "confirmed"
+                for r in self.get_reservations()
+            )
+
+            logger.debug("Resultado verificação: %s", result)
+
+            return result
+
+        except Exception:
+            logger.exception("Erro ao verificar reserva por data")
+            raise
+
+    def get_reserved_account_ids_by_date(
+        self, target_date: date
+    ) -> List[str]:
+        """
+        Retorna os IDs das contas que já possuem reserva na data.
+
+        Args:
+            target_date (date): Data alvo.
+
+        Returns:
+            List[str]: Lista de IDs de contas.
+        """
+        try:
+            logger.debug(
+                "Obtendo contas reservadas para a data %s", target_date
+            )
+
+            ids = [
+                r["account_id"]
+                for r in self.get_reservations_by_date(target_date)
+            ]
+
+            logger.debug("Contas com reserva: %s", ids)
+
+            return ids
+
+        except Exception:
+            logger.exception("Erro ao buscar contas reservadas")
+            raise
+
+    def has_future_reservation(
+        self, account_id: str, reference_date: date
+    ) -> bool:
+        """
+        Método legado.
+
+        Verifica se existe qualquer reserva futura para a conta.
+
+        NÃO utilizar na lógica nova baseada em data específica.
+        """
+        try:
+            logger.debug(
+                "Verificando reserva futura para conta %s", account_id
+            )
+
             for reservation in self.get_reservations():
                 if reservation.get("account_id") != account_id:
                     continue
 
-                reservation_date_str = reservation.get("date", "")
-                reservation_status = reservation.get("status", "")
-
-                if reservation_status != "confirmed":
+                if reservation.get("status") != "confirmed":
                     continue
 
-                if not reservation_date_str:
+                date_str = reservation.get("date")
+                if not date_str:
                     continue
 
-                reservation_date = date.fromisoformat(reservation_date_str)
+                reservation_date = date.fromisoformat(date_str)
 
                 if reservation_date >= reference_date:
-                    logger.info(
-                        "Conta %s já possui reserva futura em %s",
-                        account_id,
-                        reservation_date_str,
+                    logger.debug(
+                        "Reserva futura encontrada: %s", reservation
                     )
                     return True
 
             return False
 
         except Exception:
-            logger.exception(
-                "Erro ao verificar reserva futura da conta %s",
-                account_id,
-            )
+            logger.exception("Erro ao verificar reserva futura")
             raise
 
     def add_reservation(
@@ -161,7 +270,7 @@ class StateStore:
         status: str = "confirmed",
     ) -> None:
         """
-        Adiciona uma nova reserva ao estado e salva o arquivo.
+        Adiciona uma nova reserva ao estado e persiste no arquivo.
 
         Args:
             account_id (str): ID da conta.
@@ -170,6 +279,13 @@ class StateStore:
             status (str): Status da reserva.
         """
         try:
+            logger.debug(
+                "Adicionando reserva: conta=%s, data=%s, hora=%s",
+                account_id,
+                reservation_date,
+                hour,
+            )
+
             record = {
                 "account_id": account_id,
                 "date": reservation_date.isoformat(),
@@ -178,19 +294,18 @@ class StateStore:
             }
 
             self.state["reservations"].append(record)
+
             self.save()
 
             logger.info(
-                "Reserva registrada para conta %s em %s às %s",
+                "Reserva registrada → conta=%s | %s %s",
                 account_id,
-                reservation_date.isoformat(),
+                reservation_date,
                 hour,
             )
+
         except Exception:
-            logger.exception(
-                "Erro ao adicionar reserva da conta %s",
-                account_id,
-            )
+            logger.exception("Erro ao adicionar reserva")
             raise
 
     def get_reservation_for_account(
@@ -209,61 +324,26 @@ class StateStore:
             Optional[Dict[str, Any]]: Reserva encontrada ou None.
         """
         try:
+            logger.debug(
+                "Buscando reserva da conta %s (data=%s)",
+                account_id,
+                reservation_date,
+            )
+
             for reservation in self.get_reservations():
                 if reservation.get("account_id") != account_id:
                     continue
 
-                if reservation_date is not None:
+                if reservation_date:
                     if reservation.get("date") != reservation_date.isoformat():
                         continue
 
+                logger.debug("Reserva encontrada: %s", reservation)
                 return reservation
 
+            logger.debug("Nenhuma reserva encontrada para conta %s", account_id)
             return None
 
         except Exception:
-            logger.exception(
-                "Erro ao buscar reserva da conta %s",
-                account_id,
-            )
-            raise
-
-    def filter_available_accounts(
-        self,
-        accounts: List[Dict[str, Any]],
-        reference_date: date,
-    ) -> List[Dict[str, Any]]:
-        """
-        Filtra apenas as contas que ainda não possuem reserva futura.
-
-        Args:
-            accounts (List[Dict[str, Any]]): Lista de contas configuradas.
-            reference_date (date): Data de referência.
-
-        Returns:
-            List[Dict[str, Any]]: Contas elegíveis para nova reserva.
-        """
-        try:
-            available_accounts: List[Dict[str, Any]] = []
-
-            for account in accounts:
-                account_id = self.get_account_id(account)
-
-                if self.has_future_reservation(account_id, reference_date):
-                    logger.info(
-                        "Conta %s foi removida da execução por já possuir reserva",
-                        account_id,
-                    )
-                    continue
-
-                available_accounts.append(account)
-
-            logger.info(
-                "%s conta(s) elegível(eis) para reserva",
-                len(available_accounts),
-            )
-            return available_accounts
-
-        except Exception:
-            logger.exception("Erro ao filtrar contas elegíveis")
+            logger.exception("Erro ao buscar reserva da conta")
             raise

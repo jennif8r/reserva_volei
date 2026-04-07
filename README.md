@@ -18,6 +18,24 @@
   <img src="https://img.shields.io/badge/Tech_Foco-Automação%20%26%20Cloud-A855F7?style=for-the-badge&logo=python&logoColor=white" alt="Foco"/>
 </p>
 
+<br/>
+
+<!-- START: INOVATIVE DASHBOARD BUTTON -->
+<a href="https://reserva-volei-osvaldo.streamlit.app/">
+  <table align="center" style="border-collapse: collapse; border: 2px solid #FF0055; background-color: #0d1117; border-radius: 10px;">
+    <tr>
+      <td align="center" style="padding: 15px 40px;">
+        <img src="https://readme-typing-svg.demolab.com?font=Chakra+Petch&weight=800&size=28&pause=1000&color=FF0055&center=true&vCenter=true&width=350&height=40&lines=❖+ACESSAR+DASHBOARD;❖+ENTRAR+NO+HUB;❖+CONSULTAR+RESERVAS" alt="CTA" />
+        <br/>
+        <img src="https://img.shields.io/badge/Status-ONLINE-22C55E?style=for-the-badge&logo=stream" alt="Online" style="margin-bottom: 5px;"/>
+        <br/>
+        <samp style="color: #C9D1D9; font-size: 13px;">🔗 reserva-volei-osvaldo.streamlit.app</samp>
+      </td>
+    </tr>
+  </table>
+</a>
+<!-- END: INOVATIVE DASHBOARD BUTTON -->
+
 </div>
 
 <br/><br/>
@@ -92,6 +110,6 @@ graph TD
 <br/>
 
 <!-- FOOTER WAVE MÍSTICO -->
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:3b82f6,50:ff0055,100:0d1117&height=120&section=footer" alt="footer"/>
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:3b52b5,50:bb0055,100:0b1117&height=120&section=footer" alt="footer"/>
 
 </div>

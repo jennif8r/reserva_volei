@@ -1,58 +1,97 @@
-# 🏐 Vôlei Praça Osvaldo | Bot & Hub da Equipe
+<div align="center">
+<br/><br/>
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://reserva-volei-osvaldo.streamlit.app/)
-[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Automated_Bot-2088FF?logo=github-actions)](https://github.com/)
+<!-- BANNER ANIMADO COM GRADIENTE -->
+<img width="100%" src="https://capsule-render.vercel.app/api?type=blur&height=300&color=gradient&text=V%C3%B4lei%20Pra%C3%A7a%20Osvaldo&section=header&reversal=true&fontColor=B44A4&textBg=false&animation=fadeIn&stroke=4F4BD2&desc=Bot%20Aut%C3%B4nomo%20e%20Hub%20da%20Equipe&descAlign=50&descAlignY=64&descSize=17.9" alt="header"/>
 
-> **O Fim da Confusão de Fim de Semana:** A solução definitiva para garantir a nossa quadra de vôlei todo sábado, sem estresse, sem esquecimento e sem a clássica pergunta *"alguém já reservou?"*.
+<!-- TYPING SVG ELEGANTE -->
+<a href="https://git.io/typing-svg">
+  <img src="https://readme-typing-svg.demolab.com?font=Chakra+Petch&weight=600&size=20&duration=3000&pause=1000&color=FF0055&center=true&vCenter=true&multiline=false&width=700&lines=Fim+da+confus%C3%A3o+para+garantir+a+quadra.;Automa%C3%A7%C3%A3o+inteligente+e+silenciosa+na+nuvem.;Bot+Ca%C3%A7ador+de+Hor%C3%A1rios+%E2%80%A2+Playwright.;Analytics+e+Dashboard+com+Streamlit." alt="Typing SVG" />
+</a>
 
-🌐 **Acesse nosso Dashboard Oficial:** [reserva-volei-osvaldo.streamlit.app](https://reserva-volei-osvaldo.streamlit.app/)
+<br/><br/>
 
----
+<!-- METADADOS STATUS / FOCO -->
+<p align="center">
+  <a href="https://reserva-volei-osvaldo.streamlit.app/"><img src="https://img.shields.io/badge/Acessar-Dashboard_Oficial-FF0055?style=for-the-badge&logo=streamlit&logoColor=white" alt="Dashboard Oficial"/></a>
+  <img src="https://img.shields.io/badge/Status-Ativo_e_Operacional-22C55E?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Status"/>
+  <img src="https://img.shields.io/badge/Tech_Foco-Automação%20%26%20Cloud-A855F7?style=for-the-badge&logo=python&logoColor=white" alt="Foco"/>
+</p>
 
-## 📖 A História do Projeto
+</div>
 
-Nossa squad de vôlei tinha um problema crônico: **a reserva da quadra da Praça Osvaldo**. 
-Sempre deixávamos para a última hora, esquecíamos de entrar no site da prefeitura ou rolava aquela confusão no grupo do WhatsApp para saber quem tinha conseguido pegar os horários.
-
-Para resolver isso de uma vez por todas, este projeto nasceu. Ele é o nosso próprio "assistente virtual" e painel de controle, garantindo que sempre teremos quadra para jogar.
-
----
-
-## 📊 Nosso Dashboard (Streamlit Cloud)
-
-Para que todos da equipe saibam exatamente quando vamos jogar, o projeto conta com um portal online hospedado na nuvem pelo **Streamlit Cloud**.
-
-* **Onde fica?** [Neste link aqui.](https://reserva-volei-osvaldo.streamlit.app/)
-* **O que ele faz?** Ele lê automaticamente os dados atualizados pelo nosso robô e cria uma interface super moderna (com pegada esportiva/neon). Ele mostra quantas horas conseguimos, em quais dias e o intervalo exato de cada jogo (ex: *14h - 15h*). 
-* É só salvar o link no celular e consultar quando quiser!
+<br/><br/>
 
 ---
 
-## ⚙️ Como a Mágica Funciona (Por Trás dos Panos)
+## 🏐 O Valor do Produto
 
-O sistema opera 100% na nuvem, de forma invisível. Ninguém precisa acordar cedo ou deixar o computador ligado. Ele é dividido em três passos:
+Nossa *squad* de vôlei enfrentava um problema crônico de gestão esportiva: **a escalação e reserva de quadras aos sábados**. A dependência de ações manuais resultava em esquecimentos, janelas de horário perdidas e ruído na comunicação.
 
-### 🤖 1. O Bot "Caçador de Horários" (GitHub Actions)
-A cada intervalo de tempo, o **GitHub Actions** acorda nosso robô (feito em Python). Usando a biblioteca **Playwright**, o robô navega de forma invisível pelo portal de esportes da prefeitura e vasculha os próximos 4 sábados.
-
-### 🧠 2. A Inteligência de Escolha
-O bot não sai pegando qualquer horário. Ele tem uma **lista de prioridades** que nós definimos. 
-Ele sempre tenta primeiro as nossas janelas favoritas de 3 horas (geralmente mais pro final da tarde). 
-* *E se alguém já pegou a quadra?* Sem problema! O robô é inteligente e aciona o "Plano B", procurando horários mais cedo ou reduzindo o tempo de jogo para blocos menores (mínimo de 2 horas), garantindo que a gente não fique sem jogar.
-
-### 💾 3. Salvando as Reservas
-Quando o bot consegue reservar, ele usa inteligentemente as contas cadastradas da nossa equipe (uma conta por hora). Terminando o processo, ele anota tudo em um arquivo chamado `state.json` e salva automaticamente aqui no GitHub. 
-O Dashboard no Streamlit percebe que esse arquivo mudou e atualiza a tela na mesma hora para todos nós!
+O **Bot e Hub da Praça Osvaldo** foi desenvolvido para mudar esse cenário, proporcionando:
+- **Zero Atrito:** Garantia de disponibilidade da quadra sem acordar cedo ou depender da memória humana.
+- **Transparência Compartilhada:** Todos da equipe têm acesso a um *dashboard* com as horas garantidas, o saldo de vitórias semanais do bot e os dias programados.
+- **Inteligência Descentralizada:** Um "Plano B" autônomo. Se a quadra ideal já estiver ocupada, o bot executa matrizes de decisão para salvar blocos esportivos menores ou adaptar o cronograma.
 
 ---
 
-## 🛠️ Stack Tecnológica
+<div align="center">
+<br/>
 
-* **Linguagem:** Python 3.11
-* **Frontend / Dashboard:** Streamlit & Custom CSS (Hospedado no Streamlit Cloud)
-* **Web Automação:** Playwright (Chromium *headless*)
-* **Infraestrutura do Bot:** GitHub Actions (CRON Jobs)
-* **Banco de Dados:** Arquivo `.json` sincronizado via Git.
+<p align="center"><strong><samp> Engenharia de Automação & Robô Autônomo </samp></strong></p>
+
+<img height="34" src="https://img.shields.io/badge/Python-0D1117?style=flat-square&logo=python&logoColor=3776AB"/>
+<img height="34" src="https://img.shields.io/badge/Playwright_(Headless)-0D1117?style=flat-square&logo=playwright&logoColor=2EAD33"/>
+<img height="34" src="https://img.shields.io/badge/GitHub_Actions_(CRON)-0D1117?style=flat-square&logo=githubactions&logoColor=2088FF"/>
+<img height="34" src="https://img.shields.io/badge/State_Management-JSON-0D1117?style=flat-square&logo=json&logoColor=white"/>
+
+<br/><br/>
+
+<p align="center"><strong><samp> Analytics, UX & Hospedagem </samp></strong></p>
+
+<img height="34" src="https://img.shields.io/badge/Streamlit-0D1117?style=flat-square&logo=streamlit&logoColor=FF4B4B"/>
+<img height="34" src="https://img.shields.io/badge/Streamlit_Cloud-0D1117?style=flat-square&logo=icloud&logoColor=White"/>
+<img height="34" src="https://img.shields.io/badge/Pandas-0D1117?style=flat-square&logo=pandas&logoColor=150458"/>
+
+</div>
+
+<br/>
 
 ---
-*Feito com ❤️, código e muito suor na quadra.*
+
+## ⚙️ Arquitetura e Nível de Automação
+
+O sistema foi arquitetado para ser uma solução "hands-off" (zero intervenção manual), operando de maneira "invisível" com orquestração completa em nuvem.
+
+### O Fluxo de Execução Silenciosa:
+
+1. **Trigger Baseado em Tempo:** O **GitHub Actions** dispara *jobs* periódicos via sistema de *cron*. 
+2. **Scraping e Caça de Horários:** O robô Python usa o **Playwright** em modo *headless* para navegar ao portal de reservas e analisar os próximos 4 sábados disponíveis.
+3. **Motor de Decisão (Fallback System):** O bot detém a capacidade de avaliar o terreno. Ele tenta fechar a janela máxima otimizada, porém se o sistema detectar disponibilidade parcial, ele complementa um turno já aberto por outra conta.
+4. **Multiplexação de Contas:** Empregando um *pool* dinâmico de contas da equipe (1 hora por conta), ele burla de forma inteligente as restrições logísticas do site.
+5. **State GitOps:** Atualiza um repositório central (`state.json`) efetuando *commit* dos resultados adquiridos.
+6. **Frontend Reativo:** O webhook do repositório notifica o **Streamlit Cloud**, reiniciando e propagando as vitórias para as interfaces *mobile* da galera em tempo real!
+
+```mermaid
+graph TD
+    A([🕒 CRON GitHub Actions]) -->|Acorda o Bot| B(Robô Python)
+    B -->|Busca Headless| C[Portal da Prefeitura]
+    C -->|Rastreia Disponibilidade| D{Existem horas vazias?}
+    D -- Sim --> E[Algoritmo de Prioridade/Janelas]
+    D -- Não --> Z[Dorme e Tenta Mais Tarde]
+    E -->|Usa Pool de Contas| F[Efetua as Reservas]
+    F -->|Salva| G[(state.json no GitHub)]
+    G -->|Webhook Trigger| H[Streamlit UI Updates]
+    H -->|Exibe na Tela| I((Dashboard da Equipe))
+```
+
+---
+
+<div align="center">
+
+<br/>
+
+<!-- FOOTER WAVE MÍSTICO -->
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:3b82f6,50:ff0055,100:0d1117&height=120&section=footer" alt="footer"/>
+
+</div>

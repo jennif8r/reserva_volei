@@ -34,6 +34,12 @@ class Config:
         self.accepted_windows: List[List[str]] = self._get_json_env("ACCEPTED_WINDOWS_JSON")
         
         self.url: str = self._get_env("URL")
+        
+        # Evolution API Configs
+        self.evolution_url: str = self._get_env("EVOLUTION_API_URL")
+        self.evolution_instance: str = self._get_env("EVOLUTION_API_INSTANCE")
+        self.evolution_key: str = self._get_env("EVOLUTION_API_KEY")
+        self.whatsapp_group_jid: str = self._get_env("WHATSAPP_GROUP_JID")
 
         logger.debug("Configuração carregada com sucesso")
 

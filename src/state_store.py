@@ -347,3 +347,49 @@ class StateStore:
         except Exception:
             logger.exception("Erro ao buscar reserva da conta")
             raise
+        
+    def cleanup_past_reservations(self) -> None:
+        """
+        Remove do estado todas as reservas com data anterior à data atual.
+
+        Essa função percorre a lista de reservas e mantém apenas aquelas
+        cuja data seja igual ou posterior ao dia atual. Caso haja alteração
+        no estado, o arquivo é persistido automaticamente.
+
+        Returns:
+            None
+        """
+        try:
+            today = date.today()
+            logger.debug("Iniciando limpeza de reservas antigas (data atual: %s)", today)
+
+            original_count = len(self.state.get("reservations", []))
+
+            filtered_reservations = [
+                r
+                for r in self.get_reservations()
+                if r.get("date")
+                and date.fromisoformat(r["date"]) >= today
+            ]
+
+            new_count = len(filtered_reservations)
+
+            if new_count != original_count:
+                logger.debug(
+                    "Reservas antigas removidas: %d",
+                    original_count - new_count,
+                )
+
+                self.state["reservations"] = filtered_reservations
+                self.save()
+
+                logger.info(
+                    "Limpeza concluída. Total atual de reservas: %d",
+                    new_count,
+                )
+            else:
+                logger.debug("Nenhuma reserva antiga encontrada para remoção")
+
+        except Exception:
+            logger.exception("Erro ao limpar reservas antigas")
+            raise

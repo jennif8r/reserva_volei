@@ -2,7 +2,7 @@ name: Reserva Automática
 
 on:
   schedule:
-    - cron: "*/40 * * * *"  
+    - cron: "*/40 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -17,11 +17,16 @@ jobs:
       SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
       NOTIFY_TO: ${{ secrets.NOTIFY_TO }}
 
-      
+      # Evolution API Configs
+      EVOLUTION_API_URL: ${{ secrets.URL_EVOLUTION }}
+      EVOLUTION_API_INSTANCE: "volei-test"
+      EVOLUTION_API_KEY: ${{ secrets.EVOLUTION_API_KEY }}
+      WHATSAPP_GROUP_JID: ${{ secrets.NUMERO_CELULAR }}
+
       TARGET_HOURS_JSON: '["13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"]'
 
       ACCEPTED_WINDOWS_JSON: '[["16:00","17:00","18:00"],["17:00","18:00","19:00"],["18:00","19:00","20:00"],["19:00","20:00","21:00"],["15:00","16:00","17:00"],["14:00","15:00","16:00"],["13:00","14:00","15:00"],["12:00","13:00","14:00"],["16:00","17:00"],["17:00","18:00"],["18:00","19:00"],["19:00","20:00"],["20:00","21:00"],["15:00","16:00"],["14:00","15:00"],["13:00","14:00"]]'
-      
+
       MIN_WINDOW_SIZE: "2"
       MAX_WINDOW_SIZE: "5"
       LOOKAHEAD_WEEKS: "8"

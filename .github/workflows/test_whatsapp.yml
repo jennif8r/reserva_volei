@@ -9,11 +9,11 @@ jobs:
 
     env:
       # Evolution API Configs
-      EVOLUTION_API_URL: ${{ secrets.URL_EVOLUTION }}
+      EVOLUTION_API_URL: "https://evolution-api-pds1.onrender.com"
       EVOLUTION_API_INSTANCE: "volei-test"
       EVOLUTION_API_KEY: ${{ secrets.EVOLUTION_API_KEY }}
-      WHATSAPP_GROUP_JID: ${{ secrets.NUMERO_CELULAR }}
- 
+      WHATSAPP_GROUP_JID: "554195926148"
+      
       # Dummy values for required config fields (to avoid Config initialization error)
       RESERVA_ACCOUNTS_JSON: '[]'
       MIN_WINDOW_SIZE: "2"

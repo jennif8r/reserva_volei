@@ -2,24 +2,6 @@
   "reservations": [
     {
       "account_id": "conta_1",
-      "date": "2026-05-02",
-      "hour": "16:00",
-      "status": "confirmed"
-    },
-    {
-      "account_id": "conta_2",
-      "date": "2026-05-02",
-      "hour": "17:00",
-      "status": "confirmed"
-    },
-    {
-      "account_id": "conta_3",
-      "date": "2026-05-02",
-      "hour": "18:00",
-      "status": "confirmed"
-    },
-    {
-      "account_id": "conta_1",
       "date": "2026-05-09",
       "hour": "16:00",
       "status": "confirmed"

@@ -8,24 +8,6 @@
     },
     {
       "account_id": "conta_2",
-      "date": "2026-05-23",
-      "hour": "14:00",
-      "status": "confirmed"
-    },
-    {
-      "account_id": "conta_3",
-      "date": "2026-05-23",
-      "hour": "15:00",
-      "status": "confirmed"
-    },
-    {
-      "account_id": "conta_1",
-      "date": "2026-05-23",
-      "hour": "13:00",
-      "status": "confirmed"
-    },
-    {
-      "account_id": "conta_2",
       "date": "2026-05-30",
       "hour": "14:00",
       "status": "confirmed"

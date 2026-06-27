@@ -17,6 +17,12 @@
       "date": "2026-07-04",
       "hour": "20:00",
       "status": "confirmed"
+    },
+    {
+      "account_id": "conta_3",
+      "date": "2026-07-04",
+      "hour": "21:00",
+      "status": "confirmed"
     }
   ]
 }

@@ -11,17 +11,17 @@ jobs:
 
     env:
       RESERVA_ACCOUNTS_JSON: ${{ secrets.RESERVA_ACCOUNTS_JSON }}
-      SMTP_PASS: ${{ secrets.SMTP_PASS }}
-      SMTP_USER: ${{ secrets.SMTP_USER }}
-      SMTP_PORT: ${{ secrets.SMTP_PORT }}
-      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-      NOTIFY_TO: ${{ secrets.NOTIFY_TO }}
 
-      # Evolution API Configs
-      EVOLUTION_API_URL: ${{ secrets.URL_EVOLUTION }}
-      EVOLUTION_API_INSTANCE: "volei-test"
-      EVOLUTION_API_KEY: ${{ secrets.EVOLUTION_API_KEY }}
-      WHATSAPP_GROUP_JID: ${{ secrets.NUMERO_CELULAR }}
+      # Notificacoes desativadas. Configuracao preservada abaixo para uso futuro.
+      # SMTP_PASS: ${{ secrets.SMTP_PASS }}
+      # SMTP_USER: ${{ secrets.SMTP_USER }}
+      # SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      # SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+      # NOTIFY_TO: ${{ secrets.NOTIFY_TO }}
+      # EVOLUTION_API_URL: ${{ secrets.URL_EVOLUTION }}
+      # EVOLUTION_API_INSTANCE: "volei-test"
+      # EVOLUTION_API_KEY: ${{ secrets.EVOLUTION_API_KEY }}
+      # WHATSAPP_GROUP_JID: ${{ secrets.NUMERO_CELULAR }}
 
       TARGET_HOURS_JSON: '["13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"]'
 
@@ -31,10 +31,10 @@ jobs:
       MAX_WINDOW_SIZE: "5"
       LOOKAHEAD_WEEKS: "8"
 
-      ACTIVITY_NAME: "Voleibol"
+      ACTIVITY_NAME: "vôlei de Praia"
       REGIONAL_NAME: "Unidade Regional Matriz"
       UNIT_NAME: "CENTRO DE ESPORTE E LAZER DIRCEU GRAESER"
-      CAPACITY: "8"
+      CAPACITY: "6"
       URL: "https://curitibaemmovimento.curitiba.pr.gov.br/"
 
     steps:

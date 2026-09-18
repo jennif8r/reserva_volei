@@ -160,6 +160,8 @@ def wait_for_post_login(page: Page, timeout_ms: int = 100000) -> None:
         "text=Nova Reserva",
         "#selectAtividade",
         "#containerQuestionario",
+        "#altchaWidget",
+        ".box-pergunta",
     ]
 
     end_time = page.evaluate("Date.now()") + timeout_ms

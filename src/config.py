@@ -26,20 +26,20 @@ class Config:
         self.regional_name: str = self._get_env("REGIONAL_NAME")
         self.unit_name: str = self._get_env("UNIT_NAME")
         self.capacity: int = self._get_int_env("CAPACITY")
-        self.smtp_host: str = self._get_env("SMTP_SERVER")
-        self.smtp_port: int = self._get_int_env("SMTP_PORT")
-        self.smtp_user: str = self._get_env("SMTP_USER")
-        self.smtp_pass: str = self._get_env("SMTP_PASS")
-        self.notify_to: str = self._get_env("NOTIFY_TO")
+        # self.smtp_host: str = self._get_env("SMTP_SERVER")
+        # self.smtp_port: int = self._get_int_env("SMTP_PORT")
+        # self.smtp_user: str = self._get_env("SMTP_USER")
+        # self.smtp_pass: str = self._get_env("SMTP_PASS")
+        # self.notify_to: str = self._get_env("NOTIFY_TO")
         self.accepted_windows: List[List[str]] = self._get_json_env("ACCEPTED_WINDOWS_JSON")
         
         self.url: str = self._get_env("URL")
         
-        # Evolution API Configs
-        self.evolution_url: str = self._get_env("EVOLUTION_API_URL")
-        self.evolution_instance: str = self._get_env("EVOLUTION_API_INSTANCE")
-        self.evolution_key: str = self._get_env("EVOLUTION_API_KEY")
-        self.whatsapp_group_jid: str = self._get_env("WHATSAPP_GROUP_JID")
+        # Notificacoes desativadas. Configuracao preservada abaixo para uso futuro.
+        # self.evolution_url: str = self._get_env("EVOLUTION_API_URL", required=False)
+        # self.evolution_instance: str = self._get_env("EVOLUTION_API_INSTANCE", required=False)
+        # self.evolution_key: str = self._get_env("EVOLUTION_API_KEY", required=False)
+        # self.whatsapp_group_jid: str = self._get_env("WHATSAPP_GROUP_JID", required=False)
 
         logger.debug("Configuração carregada com sucesso")
 

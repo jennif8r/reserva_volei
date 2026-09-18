@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import date, timedelta
 from typing import List, Dict, Any
 
@@ -9,7 +10,7 @@ from src.portal.client import create_browser
 from src.portal.reservation import execute_reservation
 from src.reserva_bot.reservation_scheduler import plan_reservation
 from src.state_store import StateStore
-from src.notifier.whatsapp import WhatsAppNotifier
+# from src.notifier.whatsapp import WhatsAppNotifier
 
 
 logging.basicConfig(
@@ -19,8 +20,8 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-HEADLESS = True
-SLOW_MO = 1800
+HEADLESS = os.getenv("HEADLESS", "true").lower() in ("true", "1", "yes")
+SLOW_MO = int(os.getenv("SLOW_MO", "1800"))
 
 
 def get_next_saturdays(limit: int = 4) -> List[date]:
@@ -172,7 +173,7 @@ def execute_plan(
     target_date: date,
     plan: List[Dict[str, Any]],
     state_store: StateStore,
-    whatsapp_notifier: WhatsAppNotifier,
+    # whatsapp_notifier: WhatsAppNotifier = None,
 ) -> None:
     """
     Executa o plano de reservas no portal.
@@ -232,14 +233,15 @@ def execute_plan(
                     target_hour,
                 )
 
-                msg = (
-                    f"✅ *Reserva de Vôlei Confirmada!*\n\n"
-                    f"📅 *Data:* {target_date.strftime('%d/%m/%Y')}\n"
-                    f"⏰ *Hora:* {target_hour}\n"
-                    f"👤 *Conta:* {account_id}\n\n"
-                    f"Até lá! 🏐"
-                )
-                whatsapp_notifier.send_message(msg)
+                # msg = (
+                #     f"✅ *Reserva de Vôlei Confirmada!*\n\n"
+                #     f"📅 *Data:* {target_date.strftime('%d/%m/%Y')}\n"
+                #     f"⏰ *Hora:* {target_hour}\n"
+                #     f"👤 *Conta:* {account_id}\n\n"
+                #     f"Até lá! 🏐"
+                # )
+                # if whatsapp_notifier:
+                #     whatsapp_notifier.send_message(msg)
 
         except Exception:
             logger.exception(
@@ -264,7 +266,7 @@ def main() -> None:
         config = Config()
         state_store = StateStore()
         state_store.cleanup_past_reservations()
-        whatsapp_notifier = WhatsAppNotifier(config)
+        # whatsapp_notifier = WhatsAppNotifier(config)
 
         target_dates = get_next_saturdays(limit=4)
 
@@ -350,7 +352,7 @@ def main() -> None:
                 target_date=target_date,
                 plan=plan,
                 state_store=state_store,
-                whatsapp_notifier=whatsapp_notifier,
+                # whatsapp_notifier=whatsapp_notifier,
             )
 
     except Exception:

@@ -4,6 +4,8 @@ from typing import Optional
 
 from playwright.sync_api import Page, TimeoutError
 
+from src.portal.captcha import handle_altcha_captcha
+
 logger = logging.getLogger(__name__)
 
 
@@ -310,6 +312,9 @@ def confirm_reservation(page: Page) -> bool:
         responsibility_checkbox = page.locator("#checkResponsabilidade")
         responsibility_checkbox.scroll_into_view_if_needed()
         responsibility_checkbox.click()
+
+        if page.locator("#altchaWidget, altcha-widget").count() > 0:
+            handle_altcha_captcha(page)
 
         continue_button = page.locator("#btnContinuar")
         continue_button.click()

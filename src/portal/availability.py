@@ -5,6 +5,7 @@ from typing import List, Set
 from playwright.sync_api import Page, TimeoutError
 
 from src.config import Config
+from src.portal.captcha import handle_altcha_captcha
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,22 @@ def open_new_reservation(page: Page) -> None:
     """
     try:
         logger.debug("Abrindo nova reserva")
-        page.locator("#btnNovaReserva").click()
+
+        # Se já estiver na tela do questionário com o select visível, não precisa clicar em Nova Reserva
+        if page.locator("#selectAtividade").count() > 0 and page.locator("#selectAtividade").is_visible():
+            logger.debug("Tela de questionário / nova reserva já está aberta")
+            return
+
+        if page.locator("#btnNovaReserva").count() > 0 and page.locator("#btnNovaReserva").is_visible():
+            page.locator("#btnNovaReserva").click()
+        else:
+            # Fallback para link de Espaços Disponíveis /questionario
+            link_questionario = page.locator("a[href*='questionario']").first
+            if link_questionario.count() > 0 and link_questionario.is_visible():
+                link_questionario.click()
+            elif page.locator("#btnNovaReserva").count() > 0:
+                page.locator("#btnNovaReserva").click()
+
         page.locator("#selectAtividade").wait_for(timeout=15000)
         logger.debug("Tela de nova reserva aberta com sucesso")
     except Exception:
@@ -83,10 +99,21 @@ def set_reservation_date(page: Page, target_date: date) -> None:
             formatted_date,
         )
 
-        page.locator("#btnConfirmaData").click()
-        page.wait_for_timeout(3000)
+        # Resolve o captcha Altcha presente na página antes de confirmar
+        handle_altcha_captcha(page)
 
-        logger.debug("Data confirmada com sucesso")
+        logger.debug("Submetendo pesquisa de disponibilidade (clicando em Buscar)")
+        page.locator("#btnConfirmaData").click()
+
+        # Aguarda área de resultados ou carregamento inicial
+        try:
+            page.locator(
+                ".todos-resultados, div.resultado, [data-semresultado]:not(.d-none)"
+            ).first.wait_for(state="visible", timeout=15000)
+        except Exception:
+            page.wait_for_timeout(3000)
+
+        logger.debug("Data confirmada e busca submetida com sucesso")
     except Exception:
         logger.exception("Erro ao definir data da reserva")
         raise

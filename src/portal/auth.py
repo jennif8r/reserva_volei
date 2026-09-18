@@ -11,6 +11,49 @@ logger = logging.getLogger(__name__)
 DEBUG_DIR = Path("artifacts")
 DEBUG_DIR.mkdir(exist_ok=True)
 
+DEFAULT_TIMEOUT_MS = 30000
+NAVIGATION_TIMEOUT_MS = 60000
+POPUP_TIMEOUT_MS = 3000
+
+
+def navigate_with_retry(
+    page: Page,
+    url: str,
+    attempts: int = 2,
+) -> None:
+    """Abre uma URL sem esperar recursos secundarios indefinidamente."""
+    last_error: Optional[Exception] = None
+
+    for attempt in range(1, attempts + 1):
+        try:
+            logger.debug(
+                "Navegando para %s (tentativa %s/%s)",
+                url,
+                attempt,
+                attempts,
+            )
+            page.goto(
+                url,
+                wait_until="commit",
+                timeout=NAVIGATION_TIMEOUT_MS,
+            )
+            return
+        except TimeoutError as exc:
+            last_error = exc
+            logger.warning(
+                "Timeout ao acessar %s na tentativa %s/%s",
+                url,
+                attempt,
+                attempts,
+            )
+
+            if attempt < attempts:
+                page.wait_for_timeout(2000)
+
+    raise TimeoutError(
+        f"Nao foi possivel acessar {url} apos {attempts} tentativas"
+    ) from last_error
+
 
 def save_login_debug(page: Page) -> None:
     """
@@ -272,22 +315,39 @@ def login(
         password (str): Senha da conta.
     """
     try:
+        page.set_default_timeout(DEFAULT_TIMEOUT_MS)
+        page.set_default_navigation_timeout(NAVIGATION_TIMEOUT_MS)
+
         logger.info("Acessando portal")
-        page.goto(config.url, wait_until="domcontentloaded")
-        page.set_default_timeout(100000)
+        navigate_with_retry(page, config.url)
+
+        portal_button = page.locator("#btnPortal")
+        portal_button.wait_for(
+            state="visible",
+            timeout=NAVIGATION_TIMEOUT_MS,
+        )
 
         try:
             logger.debug("Tentando fechar popup inicial")
-            page.locator("#btn-fechar-popup").click(timeout=100000)
+            page.locator("#btn-fechar-popup").click(timeout=POPUP_TIMEOUT_MS)
             logger.debug("Popup fechado")
         except TimeoutError:
             logger.debug("Popup não apareceu")
 
-        logger.debug("Clicando em Portal")
-        page.locator("#btnPortal").click()
+        reservation_url = portal_button.get_attribute("href")
+        if not reservation_url:
+            raise RuntimeError("O botao de acesso ao portal nao possui URL")
+
+        logger.debug("Acessando area de reservas: %s", reservation_url)
+        navigate_with_retry(page, reservation_url)
 
         logger.debug("Selecionando login com CPF")
-        page.get_by_role("button", name="Entrar com CPF").click()
+        cpf_login_button = page.get_by_role("button", name="Entrar com CPF")
+        cpf_login_button.wait_for(
+            state="visible",
+            timeout=NAVIGATION_TIMEOUT_MS,
+        )
+        cpf_login_button.click(no_wait_after=True)
 
         logger.debug("Aguardando campo de CPF")
         page.locator("#documento").wait_for(state="visible", timeout=100000)
